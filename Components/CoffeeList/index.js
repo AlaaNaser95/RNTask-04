@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { ImageBackground, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 
+import * as actionCreators from "../../store/actions/authActions";
+
 // NativeBase Components
 import {
   List,
@@ -13,7 +15,9 @@ import {
   Text,
   Left,
   Content,
-  Icon
+  Icon,
+  Footer,
+  FooterTab
 } from "native-base";
 
 // Style
@@ -44,8 +48,15 @@ class CoffeeList extends Component {
     )
   });
 
+  constructor(props) {
+    super(props);
+    this.logoutUser = this.logoutUser.bind(this);
+  }
+
   componenDidMount() {
-    this.props.navigation.setParams({ quantity: this.props.quantity });
+    this.props.navigation.setParams({
+      quantity: this.props.quantity
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -59,6 +70,11 @@ class CoffeeList extends Component {
       shop: shop,
       quantity: this.props.quantity
     });
+  }
+
+  logoutUser() {
+    this.props.logout();
+    this.props.navigation.replace("Login");
   }
 
   renderItem(shop) {
@@ -99,6 +115,13 @@ class CoffeeList extends Component {
     return (
       <Content>
         <List>{ListItems}</List>
+        <Footer>
+          <FooterTab>
+            <Button onPress={() => this.logoutUser()}>
+              <Text>Logout</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
       </Content>
     );
   }
@@ -108,8 +131,10 @@ const mapStateToProps = state => ({
   coffee: state.coffee,
   quantity: quantityCounter(state.cart.list)
 });
-
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(actionCreators.logout())
+});
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
 )(CoffeeList);
